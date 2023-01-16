@@ -10,24 +10,31 @@ class Stock(object):
         self._ticker = yfinance.Ticker(self._name)
         self._dividends = []
         self._load_dividend_data()
-
         self._dividend_stable_since = None
         self._dividend_increase_since = None
         self._evaluate_dividend_streak()
         self._avg_dividend_growth = 0
         self._evaluate_dividend_growth()
-
         # Convert ROE to percentage
         self._roe = round(self._evaluate_roe() * 100, 2)
         self._pe = round(self._evaluate_pe_ratio(), 2)
 
+
     def _load_dividend_data(self):
+        """
+        _summary_
+        Loads the dividend data into our list. 
+        """
         for i, dividend_value in enumerate(self._ticker.dividends):
             if dividend_value > 0.01:
-                self._dividends.append(
-                    Dividend(self._ticker.dividends.index[i], dividend_value))
+                self._dividends.append(Dividend(self._ticker.dividends.index[i], dividend_value))
+
 
     def _evaluate_dividend_streak(self):
+        """
+        _summary_
+        Check for how long the company gives stable dividends, and for how long they increase dividends.
+        """
         last_increase = self._dividends[0]
         last_dividend = self._dividends[0].value
         self._dividend_stable_since = self._dividends[0]
@@ -44,7 +51,12 @@ class Stock(object):
                 last_increase = d
             last_dividend = d.value
 
+
     def _evaluate_dividend_growth(self):
+        """
+        _summary_
+        Calculate the average yearly dividend increase for the stock.
+        """
         changes = 0
         for i, d in enumerate(self._dividends):
             if d.timestamp.year > 2005:
@@ -60,16 +72,28 @@ class Stock(object):
         self._avg_dividend_growth = round(
             (self._avg_dividend_growth - 1) * 100, 2)
 
+
     def _evaluate_roe(self):
+        """
+        _summary_
+        Calculate the 'Return On Equity' of the stock
+        Returns:
+            Any (int or float): ROE
+        """
         stockholder_equity = [v['Total Stockholder Equity']
                               for v in self._ticker.balance_sheet.to_dict().values()]
         net_income = [v['Net Income']
                       for v in self._ticker.financials.to_dict().values()]
         return sum([x / y for x, y in zip(net_income, stockholder_equity)]) / len(stockholder_equity)
 
+
     def _evaluate_pe_ratio(self):
-        pes = [self._ticker.info.get(
-            'trailingPE'), self._ticker.info.get('forwardPE')]
+        """_summary_
+        Calculate the estimated value of the average between the trailingPE and the forwardPE
+        Returns:
+            Any (Probably float or double): P/E ratio of the stock.
+        """
+        pes = [self._ticker.info.get('trailingPE'), self._ticker.info.get('forwardPE')]
         num = 0
         total = 0
         for pe in pes:
