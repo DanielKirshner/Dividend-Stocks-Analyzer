@@ -26,7 +26,7 @@ class Stock(object):
         Loads the dividend data into our list. 
         """
         for i, dividend_value in enumerate(self._ticker.dividends):
-            if dividend_value > 0.01:
+            if dividend_value > 0.01: # This is because the information that yfinance provides us begins to falter a bit as we run back in time.
                 self._dividends.append(Dividend(self._ticker.dividends.index[i], dividend_value))
 
 
@@ -59,7 +59,7 @@ class Stock(object):
         """
         changes = 0
         for i, d in enumerate(self._dividends):
-            if d.timestamp.year > 2005:
+            if d.timestamp.year > 2005: # This is because the information that yfinance provides us begins to falter a bit as we run back in time.
                 last_dividend = d
                 first_index = i
                 break
