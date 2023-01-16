@@ -6,18 +6,28 @@ Dividend = namedtuple('Dividend', 'timestamp value')
 
 class Stock(object):
     def __init__(self, ticker):
-        self._name = ticker.upper()
-        self._ticker = yfinance.Ticker(self._name)
-        self._dividends = []
-        self._load_dividend_data()
-        self._dividend_stable_since = None
-        self._dividend_increase_since = None
-        self._evaluate_dividend_streak()
-        self._avg_dividend_growth = 0
-        self._evaluate_dividend_growth()
-        # Convert ROE to percentage
-        self._roe = round(self._evaluate_roe() * 100, 2)
-        self._pe = round(self._evaluate_pe_ratio(), 2)
+            self._name = ticker.upper()
+            self._ticker = yfinance.Ticker(self._name)
+            self._dividends = []
+            self._load_dividend_data()
+            self._dividend_stable_since = None
+            self._dividend_increase_since = None
+            self._evaluate_dividend_streak()
+            self._avg_dividend_growth = 0
+            self._evaluate_dividend_growth()
+            # Convert ROE to percentage
+            self._roe = round(self._evaluate_roe() * 100, 2)
+            self._pe = round(self._evaluate_pe_ratio(), 2)
+            self._price = self._ticker.info['currentPrice']
+            self._sector = self._ticker.info['sector']
+            self._industry = self._ticker.info['industry']
+            self._dividend_yield = self._ticker.info.get('dividendYield', 0)
+            self._payout_ratio = self._ticker.info['payoutRatio']
+            if self._payout_ratio is not None:
+                self._payout_ratio = round(self._payout_ratio * 100, 1)
+            self._beta = round(self._ticker.info['beta'], 2)
+            self._market_cap = self._ticker.info['marketCap']
+            self._chowder = round(self._dividend_yield * 100, 2) + self._avg_dividend_growth
 
 
     def _load_dividend_data(self):
