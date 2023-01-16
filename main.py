@@ -1,5 +1,4 @@
 import yfinance
-import traceback
 from collections import namedtuple
 
 Dividend = namedtuple('Dividend', 'timestamp value')
@@ -114,34 +113,3 @@ class Stock(object):
         if num == 0:
             return 0
         return total / num
-    
-    
-    def is_interesting_stock(self):
-        """
-        Returns:
-            Boolean : Is the stock interesting? (According to my parameters...)
-        """
-        return self._dividend_yield >= 0.02 and self._dividend_increase_since <= 2007 and \
-            self._chowder >= 9 and self._roe >= 15 and self._payout_ratio <= 60 and \
-            self._market_cap >= 2000000000 and self._beta <= 1 and self._pe <= 40
-
-
-TICKERS = [
-    'MSFT',
-    'AAPL',
-]
-
-
-def main():
-    for i, ticker in enumerate(TICKERS):
-        print(f'Processing {ticker} ({i}/{len(TICKERS)})')
-        try:
-            s = Stock(ticker)
-            if s.is_interesting_stock():
-                 print(f'{ticker} is interesting!')
-        except Exception as e:
-            traceback.print_exc()
-
-
-if __name__ == "__main__":
-    main()
